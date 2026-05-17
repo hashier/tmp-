@@ -11,15 +11,11 @@
       background: #0a0a0f;
       overflow: hidden;
       font-family: 'Segoe UI', sans-serif;
-    }
-
-    #root {
       width: 100vw;
       height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative;
     }
 
     .layer {
@@ -28,18 +24,16 @@
       text-transform: uppercase;
       letter-spacing: 0.1em;
       user-select: none;
-      will-change: transform;
-      transition: transform 0.05s linear;
     }
 
-    .layer-1 { font-size: 9rem;  color: rgba(99,  102, 241, 0.15); }
-    .layer-2 { font-size: 7rem;  color: rgba(139, 92,  246, 0.25); }
-    .layer-3 { font-size: 5rem;  color: rgba(168, 85,  247, 0.45); }
-    .layer-4 { font-size: 3.5rem; color: rgba(217, 70,  239, 0.7);  }
-    .layer-5 { font-size: 2rem;  color: rgba(255, 255, 255, 0.95); }
+    .layer-1 { font-size: 9rem;   color: rgba(99,  102, 241, 0.15); }
+    .layer-2 { font-size: 7rem;   color: rgba(139,  92, 246, 0.25); }
+    .layer-3 { font-size: 5rem;   color: rgba(168,  85, 247, 0.45); }
+    .layer-4 { font-size: 3.5rem; color: rgba(217,  70, 239, 0.70); }
+    .layer-5 { font-size: 2rem;   color: rgba(255, 255, 255, 0.95); }
 
     .subtitle {
-      position: absolute;
+      position: fixed;
       bottom: 2rem;
       left: 50%;
       transform: translateX(-50%);
@@ -51,56 +45,33 @@
   </style>
 </head>
 <body>
-  <div id="root"></div>
 
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <div class="layer layer-1" id="l1">Hello World</div>
+  <div class="layer layer-2" id="l2">Hello World</div>
+  <div class="layer layer-3" id="l3">Hello World</div>
+  <div class="layer layer-4" id="l4">Hello World</div>
+  <div class="layer layer-5" id="l5">Hello World</div>
+  <p class="subtitle">Move your mouse</p>
 
-  <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
-
-    const LAYERS = [
-      { cls: 'layer-1', depth: 0.06 },
-      { cls: 'layer-2', depth: 0.12 },
-      { cls: 'layer-3', depth: 0.20 },
-      { cls: 'layer-4', depth: 0.32 },
-      { cls: 'layer-5', depth: 0.50 },
+  <script>
+    const layers = [
+      { el: document.getElementById('l1'), depth: 0.06 },
+      { el: document.getElementById('l2'), depth: 0.12 },
+      { el: document.getElementById('l3'), depth: 0.20 },
+      { el: document.getElementById('l4'), depth: 0.32 },
+      { el: document.getElementById('l5'), depth: 0.50 },
     ];
 
-    function App() {
-      const [mouse, setMouse] = useState({ x: 0, y: 0 });
-      const ref = useRef(null);
+    window.addEventListener('mousemove', (e) => {
+      const cx = window.innerWidth  / 2;
+      const cy = window.innerHeight / 2;
+      const dx = e.clientX - cx;
+      const dy = e.clientY - cy;
 
-      useEffect(() => {
-        const handleMove = (e) => {
-          const cx = window.innerWidth  / 2;
-          const cy = window.innerHeight / 2;
-          setMouse({ x: e.clientX - cx, y: e.clientY - cy });
-        };
-        window.addEventListener('mousemove', handleMove);
-        return () => window.removeEventListener('mousemove', handleMove);
-      }, []);
-
-      return (
-        <div ref={ref} style={{ width: '100vw', height: '100vh', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {LAYERS.map(({ cls, depth }, i) => (
-            <div
-              key={i}
-              className={`layer ${cls}`}
-              style={{
-                transform: `translate(${mouse.x * depth}px, ${mouse.y * depth}px)`,
-              }}
-            >
-              Hello World
-            </div>
-          ))}
-          <p className="subtitle">Move your mouse</p>
-        </div>
-      );
-    }
-
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+      layers.forEach(({ el, depth }) => {
+        el.style.transform = `translate(${dx * depth}px, ${dy * depth}px)`;
+      });
+    });
   </script>
 </body>
 </html>

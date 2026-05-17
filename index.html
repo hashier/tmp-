@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hello World Parallax</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0a0f;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    #root {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .layer {
+      position: absolute;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      user-select: none;
+      will-change: transform;
+      transition: transform 0.05s linear;
+    }
+
+    .layer-1 { font-size: 9rem;  color: rgba(99,  102, 241, 0.15); }
+    .layer-2 { font-size: 7rem;  color: rgba(139, 92,  246, 0.25); }
+    .layer-3 { font-size: 5rem;  color: rgba(168, 85,  247, 0.45); }
+    .layer-4 { font-size: 3.5rem; color: rgba(217, 70,  239, 0.7);  }
+    .layer-5 { font-size: 2rem;  color: rgba(255, 255, 255, 0.95); }
+
+    .subtitle {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.3);
+      font-size: 0.85rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    const LAYERS = [
+      { cls: 'layer-1', depth: 0.06 },
+      { cls: 'layer-2', depth: 0.12 },
+      { cls: 'layer-3', depth: 0.20 },
+      { cls: 'layer-4', depth: 0.32 },
+      { cls: 'layer-5', depth: 0.50 },
+    ];
+
+    function App() {
+      const [mouse, setMouse] = useState({ x: 0, y: 0 });
+      const ref = useRef(null);
+
+      useEffect(() => {
+        const handleMove = (e) => {
+          const cx = window.innerWidth  / 2;
+          const cy = window.innerHeight / 2;
+          setMouse({ x: e.clientX - cx, y: e.clientY - cy });
+        };
+        window.addEventListener('mousemove', handleMove);
+        return () => window.removeEventListener('mousemove', handleMove);
+      }, []);
+
+      return (
+        <div ref={ref} style={{ width: '100vw', height: '100vh', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {LAYERS.map(({ cls, depth }, i) => (
+            <div
+              key={i}
+              className={`layer ${cls}`}
+              style={{
+                transform: `translate(${mouse.x * depth}px, ${mouse.y * depth}px)`,
+              }}
+            >
+              Hello World
+            </div>
+          ))}
+          <p className="subtitle">Move your mouse</p>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
